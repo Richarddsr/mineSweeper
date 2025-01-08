@@ -4,31 +4,64 @@ import random
 
 # Variável global para armazenar a instância de CampoMinado
 campo = None
+cronometro_em_andamento = False  # Controla se o cronômetro está em andamento
+tempo = 0  # Tempo do cronômetro
 
 def credits():
     messagebox.showinfo("Créditos", "Jogo 100% criado por mim")
 
+def rules():
+ messagebox.showinfo("Regras", "1 - Objetivo: O objetivo é revelar todas as células do campo sem clicar em uma mina. Se você clicar em uma mina, o jogo acaba.\n2 - Células: O campo é formado por uma grade de 81 células. Existem 10 minas no total.\n3 - Final: Por fim, caso nenhuma mina seja revelada, o jogo é ganho ")
+
+
 def start():
-    global campo  # Faz referência à variável global
+    global campo, cronometro_em_andamento, tempo  # Faz referência à variável global
+    tempo = 0  # Reinicia o tempo sempre que um novo jogo começa
+    cronometro_em_andamento = True  # Inicia o cronômetro
+
     # Cria uma nova janela (Toplevel) a partir da janela principal (root)
     janela_start = tk.Toplevel(root)
     janela_start.configure(bg="lightgreen")
     janela_start.title("MineSweeper!")
     janela_start.attributes("-fullscreen", True)
 
-    label = tk.Label(janela_start, text="🔥💣MineSweeper💣🔥", font=("Cardinal", 16), bg="black", fg="Red")
-    label.pack(pady=20)  # Empacota a label com um espaçamento de 20
+    label = tk.Label(janela_start, text="🔥💣MineSweeper💣🔥", font=("Cardinal", 16), bg="white", fg="Red")
+    label.pack(pady=0, fill=tk.X)  # Empacota a label com um espaçamento de 20
 
-    # Botão para sair do modo tela cheia
+    label = tk.Label(janela_start, text="M\ni\nn\ne\nS\nw\ne\ne\np\ne\nr", font=("Cardinal", 16), bg="white", fg="Red")
+    label.pack(side="left", pady=0, fill=tk.Y)  # Empacota a label com um es
+    
+    label = tk.Label(janela_start, text="MineSweeper", font=("Cardinal", 16), bg="white", fg="Red")
+    label.pack(side="bottom", pady=0, fill=tk.X)  # Empacota a label com um es
+
+    label = tk.Label(janela_start, text="M\ni\nn\ne\nS\nw\ne\ne\np\ne\nr", font=("Cardinal", 16), bg="white", fg="Red")
+    label.pack(side="right", pady=0, fill=tk.Y)  # Empacota a label com um es
+
+    label = tk.Label(janela_start, text="🌷", font=("Cardinal", 20), bg="lightgreen", fg="black")
+    label.pack(side="bottom", padx=20)  # Empacota a label com um espaçamento de 20
+
+    label = tk.Label(janela_start, text="🌷", font=("Cardinal", 20), bg="lightgreen", fg="black")
+    label.pack(pady=70)  # Empacota a label com um espaçamento de 20
+
+    # Adiciona um botão para sair do modo tela cheia
     def sair_tela_cheia():
         janela_start.attributes("-fullscreen", False)
 
-    # Adiciona um botão para sair do modo tela cheia
+    # Adiciona o botão Home para sair da janela
     botao_sair = tk.Button(janela_start, text="Home", command=janela_start.destroy)
     botao_sair.pack(side="bottom", pady=20)  # Empacota o botão "Home" no fundo da tela
 
     # Instancia o jogo na janela criada e atribui à variável global
     campo = CampoMinado(janela_start)
+
+    # Label para mostrar o cronômetro
+    global label_cronometro
+    label_cronometro = tk.Label(janela_start, text="00:00", font=("Cardinal", 14), bg="lightgreen")
+    label_cronometro.pack(pady=10)
+
+    # Inicia o cronômetro
+    atualizar_cronometro(janela_start)
+
 
 class CampoMinado:
     def __init__(self, root, linhas=9, colunas=9, minas=10):
@@ -128,6 +161,15 @@ class CampoMinado:
         elif self.celulas[i][j]["estado"] == "revelada":
             return  # Não faz nada se a célula já foi revelada
 
+# Função para atualizar o cronômetro
+def atualizar_cronometro(janela):
+    if cronometro_em_andamento:
+        global tempo
+        tempo += 1
+        minutos = tempo // 60
+        segundos = tempo % 60
+        label_cronometro.config(text=f"{minutos:02}:{segundos:02}")
+        janela.after(1000, atualizar_cronometro, janela)  # Chama a função a cada 1 segundo
 
 # Cria a janela principal
 root = tk.Tk()
@@ -135,7 +177,7 @@ root.title("MineSweeper Home")
 root.geometry("500x400")
 root.configure(bg="orange")
 
-label1 = tk.Label(root, text="MineSweeper Home 💣", font=("Cardinal", 16), bg="black", fg="Red")
+label1 = tk.Label(root, text="🏠 MineSweeper Home 🏠", font=("Cardinal", 16), bg="black", fg="Red")
 label1.pack(pady=10, fill=tk.X)  # Centraliza a label
 
 # Botão para abrir a nova janela e iniciar o jogo
@@ -145,7 +187,11 @@ start_button.pack(pady=10)  # Empacota o botão "Start" centralizado
 credits_button = tk.Button(root, text="Credits", font=('Cardinal', 10, 'bold'), command=credits)
 credits_button.pack(pady=10)  # Empacota o botão "Credits" centralizado
 
-label2 = tk.Label(root, text="Version 1.0", font=("Cardinal", 13), bg="orange", fg="white")
+rules_button = tk.Button(root, text="Rules", font=('Cardinal', 10, 'bold'), command=rules)
+rules_button.pack(pady=10)  # Empacota o botão "Credits" centralizado
+
+
+label2 = tk.Label(root, text="Version 1.1", font=("Cardinal", 13), bg="orange", fg="white")
 label2.pack(side="bottom", pady=10)  # Posiciona o label de versão na parte inferior da janela
 
 # Inicia o loop principal
